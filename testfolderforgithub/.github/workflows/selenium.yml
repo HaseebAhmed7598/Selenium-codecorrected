@@ -23,26 +23,24 @@ jobs:
         with:
           python-version: 3.11
 
-      # Step 3: Install dependencies from project root
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install allure-pytest
-          pip install webdriver-manager
 
-      # Step 4: Install Chrome & WebDriver
+      # Step 4: Install Chrome and ChromeDriver
       - name: Install Chrome and ChromeDriver
         run: |
           sudo apt-get update
           sudo apt-get install -y chromium-browser chromium-chromedriver
           sudo apt-get install -y unzip
 
-      # Step 5: Run Selenium test (assignment.py)
-      - name: Run Selenium Test
+      # Step 5: Run Selenium tests
+      - name: Run Selenium Tests
         run: |
           mkdir -p allure-results
-          pytest testfolderforgithub/assignment.py --alluredir=allure-results --maxfail=1 --disable-warnings -q
+          pytest tests/assignment.py --alluredir=allure-results --maxfail=1 --disable-warnings -q
 
       # Step 6: Upload Allure results
       - name: Upload Allure Report
