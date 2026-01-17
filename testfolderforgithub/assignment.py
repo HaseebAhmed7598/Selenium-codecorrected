@@ -6,18 +6,41 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+
+
+
 
 import time
 import allure
 
 # from conftest import driver
 
+# @pytest.fixture
+# def driver():
+#     driver = webdriver.Chrome()
+#     driver.maximize_window()
+#     yield driver
+#     driver.quit()
+
+
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome()
-    driver.maximize_window()
-    yield driver
-    driver.quit()
+    options = Options()
+    options.headless = True  # Run without GUI
+    options.add_argument("--no-sandbox")  # Linux-specific fix
+    options.add_argument("--disable-dev-shm-usage")  # Prevent memory issues
+
+    # Use webdriver-manager to automatically install ChromeDriver
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+
+    driver.maximize_window()  # Optional: maximize window
+    yield driver  # Provide driver to tests
+    driver.quit()  # Cleanup after test
+
 
 @allure.title("Open URL")
 @allure.description("open the URL of DEMO QA Website")
