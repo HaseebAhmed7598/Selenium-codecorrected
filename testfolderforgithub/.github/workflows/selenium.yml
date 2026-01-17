@@ -40,7 +40,7 @@ jobs:
       - name: Run Selenium Tests
         run: |
           mkdir -p allure-results
-          pytest tests/assignment_test.py --alluredir=allure-results --maxfail=1 --disable-warnings -q
+          pytest testfolderforgithub/assignment_test.py --alluredir=allure-results --maxfail=1 --disable-warnings -q
 
       # Step 6: Upload Allure results
       - name: Upload Allure Report
