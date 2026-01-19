@@ -1,47 +1,75 @@
-import pytest
-import selenium
-from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-
-
-
-
-import time
-import allure
-
-# from conftest import driver
-
+# import pytest
+# import selenium
+# from selenium import webdriver
+# from selenium.webdriver.support.wait import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
+# from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.chrome.service import Service
+# from selenium.webdriver.chrome.options import Options
+# from webdriver_manager.chrome import ChromeDriverManager
+#
+#
+#
+#
+# import time
+# import allure
+#
+# # from conftest import driver
+#
+# # @pytest.fixture
+# # def driver():
+# #     driver = webdriver.Chrome()
+# #     driver.maximize_window()
+# #     yield driver
+# #     driver.quit()
+#
+#
 # @pytest.fixture
 # def driver():
-#     driver = webdriver.Chrome()
-#     driver.maximize_window()
-#     yield driver
-#     driver.quit()
-
+#     options = Options()
+#     options.headless = True  # Run without GUI
+#     options.add_argument("--no-sandbox")  # Linux-specific fix
+#     options.add_argument("--disable-dev-shm-usage")  # Prevent memory issues
+#
+#     # Use webdriver-manager to automatically install ChromeDriver
+#     service = Service(ChromeDriverManager().install())
+#     driver = webdriver.Chrome(service=service, options=options)
+#
+#     driver.maximize_window()  # Optional: maximize window
+#     yield driver  # Provide driver to tests
+#     driver.quit()  # Cleanup after test
+import allure
+import pytest
+import time
+from selenium import webdriver
+from selenium.webdriver import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+import os
 
 @pytest.fixture
 def driver():
     options = Options()
-    options.headless = True  # Run without GUI
-    options.add_argument("--no-sandbox")  # Linux-specific fix
-    options.add_argument("--disable-dev-shm-usage")  # Prevent memory issues
 
-    # Use webdriver-manager to automatically install ChromeDriver
+    # Run headless only on CI (Linux) or environment variable
+    if os.getenv("CI") == "true":
+        options.add_argument("--headless=new")  # New headless mode for Chrome 111+
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--remote-allow-origins=*")
+    else:
+        # Local machine: see the Chrome browser
+        options.add_argument("--start-maximized")
+
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
-
-    driver.maximize_window()  # Optional: maximize window
-    yield driver  # Provide driver to tests
-    driver.quit()  # Cleanup after test
-
-
+    yield driver
+    driver.quit()
 @allure.title("Open URL")
 @allure.description("open the URL of DEMO QA Website")
 def test_openurl(driver):
